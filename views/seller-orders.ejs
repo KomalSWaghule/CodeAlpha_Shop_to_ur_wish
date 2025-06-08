@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seller Orders</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family:'Times New Roman', Times, serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto 20px auto;
+      text-align: center;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+      color: #444;
+    }
+
+    select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1.5px solid #93c5fd;
+      background-color: #e0f2fe;
+      color: #1e3a8a;
+      outline: none;
+      font-size: 14px;
+    }
+
+    select:hover {
+      background-color: #dbeafe;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    th {
+      background-color: #3b82f6;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    ul li {
+      margin-bottom: 4px;
+    }
+
+    p {
+      text-align: center;
+      font-size: 16px;
+      color: #555;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        background: white;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        padding: 10px;
+      }
+
+      td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Product Orders</h1>
+
+  <form method="GET" action="/seller/orders">
+    <label for="status">Filter by Status:</label>
+    <select name="status" id="status" onchange="this.form.submit()">
+      <option value="">All</option>
+      <option value="Pending" <%= statusFilter === 'Pending' ? 'selected' : '' %>>Pending</option>
+      <option value="Processing" <%= statusFilter === 'Processing' ? 'selected' : '' %>>Processing</option>
+      <option value="Shipped" <%= statusFilter === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+      <option value="Delivered" <%= statusFilter === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+      <option value="Cancelled" <%= statusFilter === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+    </select>
+  </form>
+
+  <% if (orders.length === 0) { %>
+    <p>No orders for your products yet.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Products</th>
+          <th>Status</th>
+          <th>Order Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+          <tr>
+            <td data-label="Customer"><%= order.userId.username %></td>
+            <td data-label="Products">
+              <ul>
+                <% order.products.forEach(p => { %>
+                  <li><%= p.name %> (x<%= p.quantity %>) - ₹<%= p.price %></li>
+                <% }) %>
+              </ul>
+            </td>
+            <td data-label="Status"><%= order.status %></td>
+            <td data-label="Order Date"><%= new Date(order.createdAt).toLocaleString() %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</body>
+</html>

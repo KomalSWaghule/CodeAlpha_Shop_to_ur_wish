@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Product</title>
+</head>
+<body>
+  <h1>Edit Product</h1>
+  <form method="POST" action="/editproduct/<%= product._id %>?_method=PUT">
+    <label>Name:</label>
+    <input type="text" name="name" value="<%= product.name %>"><br>
+
+    <label>Description:</label>
+    <textarea name="description"><%= product.description %></textarea><br>
+
+    <label>Price:</label>
+    <input type="number" name="price" value="<%= product.price %>"><br>
+
+    <label>Image URL:</label>
+    <input type="text" name="image" value="<%= product.image %>"><br>
+
+    <button type="submit">Update Product</button>
+  </form>
+</body>
+</html>

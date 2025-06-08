@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin - Products</title></head>
+<body>
+  <h1>Manage Products</h1>
+  <a href="/admin/products/new">Add New Product</a> | <a href="/admin/logout">Logout</a>
+  <ul>
+    <% products.forEach(product => { %>
+      <li><%= product.name %> - ₹<%= product.price %></li>
+      <a href="/admin/products/edit/<%= product._id %>">Edit</a>
+    <% }) %>
+  </ul>
+  
+<form method="POST" action="/deleteproduct/<%= product._id %>?_method=DELETE" onsubmit="return confirm('Are you sure you want to delete this product?')">
+  <button type="submit" style="background-color:red;color:white;">Delete Product</button>
+</form>
+
+  <p><a href="/">Back to Shop</a></p>
+</body>
+</html>

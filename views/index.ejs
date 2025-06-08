@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Listing</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:'Times New Roman', Times, serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    nav {
+     background: linear-gradient(to right, #164674, #4e789a);
+     transition: background 0.5s ease;
+      color: white;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    nav h1 {
+      margin: 0;
+      font-size: 2em;
+      letter-spacing: 1px;
+    }
+
+    .login {
+      margin-top: 10px;
+      text-align: right;
+      font-size: large;
+    }
+
+    .login a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    .login a:hover {
+      color: #ffd700;
+    }
+
+    .sort {
+      margin-top: 15px;
+      text-align: right;
+      font-size: large;
+      font-weight: 800;
+    }
+
+    .sort label {
+      margin-right: 10px;
+      font-weight: 500;
+    }
+
+    select {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .product {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .product h3 {
+      font-size: 1.2em;
+      color: #007bff;
+      margin: 10px 0;
+    }
+
+    .product img {
+      max-height: 160px;
+      object-fit: contain;
+      margin: auto;
+    }
+
+    .product p {
+      font-size: 0.95em;
+      color: #444;
+      margin: 10px 0;
+    }
+
+    .product a {
+      color: #007BFF;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .product a:hover {
+      text-decoration: underline;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      font-size: 0.95em;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>🛒 Your Favorites, Just a Click Away</h1>
+    <div class="login">
+      <% if (userId) { %>
+        <% if (role === 'admin' || role === 'seller') { %>
+          <a href="/addproduct">Add New Product</a>
+        <% } %>
+        <a href="/cart">View Cart</a>
+        <% if (role === 'admin') { %>
+          <a href="/admin/orders">All Orders</a>
+        <% } else if (role === 'seller') { %>
+          <a href="/seller/orders">Your Orders</a>
+        <% } %>
+        <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      <% } %>
+    </div>
+    <div class="sort">
+      <label for="typeFilter">Filter by Category:</label>
+      <select id="typeFilter">
+        <option value="">All</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Clothes">Clothes</option>
+        <option value="Books">Books</option>
+        <!-- Extend with more categories -->
+      </select>
+    </div>
+  </nav>
+
+  <div class="products" id="productContainer">
+    <% products.forEach(product => { %>
+      <div class="product">
+        <img src="<%= product.image %>" alt="<%= product.name %>">
+        <h3><%= product.name %></h3>
+        <p><%= product.description %></p>
+        <p><strong>₹<%= product.price %></strong></p>
+        <a href="/product/<%= product._id %>">View Details</a>
+        <form action="/add-to-cart/<%= product._id %>" method="POST">
+          <input type="hidden" name="productId" value="<%= product._id %>">
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit">Add to Cart</button>
+        </form>
+      </div>
+    <% }) %>
+  </div>
+
+  <script>
+    document.getElementById('typeFilter').addEventListener('change', async function () {
+      const type = this.value;
+      const res = await fetch(`/products?type=${type}`);
+      const products = await res.json();
+
+      const container = document.getElementById('productContainer');
+      container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1 / -1; text-align:center;">No products found.</p>';
+        return;
+      }
+
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product';
+        card.innerHTML = `
+          <img src="${product.image}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>${product.description}</p>
+          <p><strong>₹${product.price}</strong></p>
+          <a href="/product/${product._id}">View Details</a>
+          <form action="/add-to-cart/${product._id}" method="POST">
+            <input type="hidden" name="productId" value="${product._id}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit">Add to Cart</button>
+          </form>
+        `;
+        container.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>
