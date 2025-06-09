@@ -4,7 +4,7 @@ const router = express.Router();
 import Product from '../models/product.js';
 import Cart from '../models/cart.js';
 import Order from '../models/order.js';
-import User from '../models/user.js';
+import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import multer from 'multer';
 
