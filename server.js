@@ -17,7 +17,9 @@ const app = express();
 app.use(bodyParser.json());
 
 // Connect to DB
-mongoose.connect('mongodb://localhost:27017/ecommerce')
+const mongoURI = process.env.MONGODB_URI;
+
+mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
