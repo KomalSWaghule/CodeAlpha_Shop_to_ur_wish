@@ -7,6 +7,10 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import dotenv from 'dotenv';
+
+// Load .env file
+dotenv.config();
 
 // For __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -16,11 +20,15 @@ const app = express();
 
 app.use(bodyParser.json());
 
-// Connect to DB
+// MongoDB Atlas URI from .env file
 const mongoURI = process.env.MONGODB_URI;
 
-mongoose.connect(mongoURI)
-  .then(() => console.log('MongoDB connected'))
+// Connect to MongoDB Atlas
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log('MongoDB Atlas connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware
@@ -28,12 +36,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Session setup
+// Session setup with connect-mongo using Atlas
 app.use(session({
   secret: 'mySecretKey',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/ecommerce' })
+  store: MongoStore.create({
+    mongoUrl: mongoURI,
+    collectionName: 'sessions'
+  })
 }));
 
 // Passport setup
@@ -45,6 +56,7 @@ import mainRoutes from './Routes/index.js';
 app.use('/', mainRoutes);
 
 // Start server
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
