@@ -13,7 +13,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://komalwaghule05:Komal11062005@cluster0.pmivpsb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0';
 const PORT = process.env.PORT || 3000;
 
 mongoose.connect(MONGODB_URI)
