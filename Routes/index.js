@@ -675,7 +675,7 @@ router.post("/seller/orders/:orderId/status", async (req, res) => {
     console.error("Error updating order status:", err);
     res.status(500).send("Internal Server Error");
   }
-
+});
 router.get('/user-orders', async (req, res) => {
   try {
     const userId = req.session.userId;
