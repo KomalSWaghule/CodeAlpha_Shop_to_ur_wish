@@ -14,7 +14,207 @@ height: 100vh;
    text-align: center;
     }
     .box1 {
-        display: flex;
+        display: flex;<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Page</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+    }
+
+    .box1, .box2 {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .box1 {
+      background: linear-gradient(to bottom, rgba(1, 141, 141, 0.758), #c7f4f2);
+    }
+
+    .text {
+      margin-bottom: 20px;
+      font-weight: bolder;
+      font-style: italic;
+    }
+
+    .box1 img {
+      width: 80%;
+      max-width: 350px;
+      height: auto;
+      margin-bottom: 25px;
+    }
+
+    .box1 a {
+      border: 2px solid black;
+      border-radius: 20px;
+      padding: 10px 20px;
+      color: black;
+      background-color: white;
+      text-decoration: none;
+      font-style: italic;
+      font-size: medium;
+      transition: 0.3s;
+    }
+
+    .box1 a:hover {
+      background-color: black;
+      color: white;
+    }
+
+    .box2 {
+      background: linear-gradient(to top, rgba(1, 141, 141, 0.758), #c7f4f2);
+      font-style: italic;
+      font-weight: 800;
+    }
+
+    form {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      margin-bottom: 5px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    select {
+      font-style: italic;
+      font-size: medium;
+      border: 1px solid #ccc;
+      padding: 10px 15px;
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    input[type="submit"] {
+      font-weight: 800;
+      font-family: 'Times New Roman', Times, serif;
+      padding: 10px 20px;
+      margin-top: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: white;
+      border: 2px solid black;
+      transition: 0.3s;
+    }
+
+    input[type="submit"]:hover {
+      background-color: black;
+      color: white;
+    }
+
+    p a {
+      font-size: small;
+      text-decoration: none;
+      color: #333;
+    }
+
+    p a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .box1, .box2 {
+        width: 100%;
+        height: auto;
+      }
+
+      form {
+        padding: 10px;
+      }
+
+      .box1 img {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="box1">
+      <div class="text">
+        <h2>New here?</h2>
+        <h3>Sign up and discover great amount of new opportunities</h3>
+      </div>
+      <img src="https://medafrica-log.com/wp-content/uploads/2022/10/ecommerce-solutions.png" alt="ecommerce image">
+      <a href="/register">Sign up</a>
+    </div>
+
+    <div class="box2">
+      <form action="/login" method="POST">
+        <h2>Login</h2>
+        <hr><br>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Login as:</label>
+          <select id="role" name="role" required>
+            <option value="user">User</option>
+            <option value="seller">Seller</option>
+          </select>
+        </div>
+
+        <p><a href="/reset-password">Forgot password? Reset here</a></p>
+
+        <% if (typeof error !== 'undefined') { %>
+          <p style="color: red;"><%= error %></p>
+        <% } %>
+
+        <input type="submit" value="Sign in">
+        <br><br><hr>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+
         flex-direction: column;
         justify-content: center; 
     align-items: center; 
