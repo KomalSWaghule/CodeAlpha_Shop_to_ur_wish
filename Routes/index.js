@@ -657,12 +657,13 @@ router.post("/admin/orders/:orderId/status", async (req, res) => {
 
   try {
     await Order.findByIdAndUpdate(orderId, { status });
-    res.redirect("/admin/orders"); // Redirect back to the orders page
+    res.redirect("/admin/orders");
   } catch (err) {
     console.error("Error updating order status:", err);
     res.status(500).send("Internal Server Error");
   }
 });
+
 router.post("/seller/orders/:orderId/status", async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
