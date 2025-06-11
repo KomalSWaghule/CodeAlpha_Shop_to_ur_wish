@@ -128,7 +128,7 @@
             </td>
 
             <td data-label="Status">
-              <form action="/seller/orders/<%= order._id %>/status" method="POST">
+              <form action="/admin/orders/<%= order._id %>/status" method="POST">
                 <select name="status" onchange="this.form.submit()">
                   <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
                   <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
