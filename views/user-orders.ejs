@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Orders</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .order {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    .order h3 { margin-top: 0; }
+    .product-list { margin-left: 20px; }
+    .shipping { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Your Orders</h1>
+  <% if (orders.length === 0) { %>
+    <p>You have no orders yet.</p>
+  <% } else { %>
+    <% orders.forEach(order => { %>
+      <div class="order">
+        <h3>Order ID: <%= order._id %></h3>
+        <p><strong>Status:</strong> <%= order.status %></p>
+        <p><strong>Total:</strong> ₹<%= order.total.toFixed(2) %></p>
+        <p><strong>Date:</strong> <%= new Date(order.createdAt).toDateString() %></p>
+
+        <div class="shipping">
+          <p><strong>Shipping Address:</strong><br>
+            <%= order.shippingAddress.street %>, 
+            <%= order.shippingAddress.city %>, 
+            <%= order.shippingAddress.state %> - 
+            <%= order.shippingAddress.zip %>, 
+            <%= order.shippingAddress.country %>
+          </p>
+        </div>
+
+        <h4>Products:</h4>
+        <ul class="product-list">
+          <% order.products.forEach(item => { %>
+            <li>
+              <strong><%= item.name %></strong> — ₹<%= item.price %> x <%= item.quantity %> 
+              <br>
+              <small>Seller: <%= item.createdBy.name || 'Seller' %></small>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    <% }) %>
+  <% } %>
+</body>
+</html>

@@ -8,19 +8,20 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+// For __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://komalwaghule05:Komal11062005@cluster0.pmivpsb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0';
-const PORT = process.env.PORT || 3000;
+app.use(bodyParser.json());
 
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+// Connect to DB
+mongoose.connect('mongodb://localhost:27017/ecommerce')
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-
+// Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));

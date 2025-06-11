@@ -49,17 +49,18 @@ const orderSchema = new mongoose.Schema({
   },
 
   shippingAddress: {
-    street: { type: String },
-    city: { type: String },
-    state: { type: String },
-    zip: { type: String },
-    country: { type: String }
+    street: { type: String ,required:true},
+    city: { type: String ,required:true},
+    state: { type: String ,required:true},
+    zip: { type: String ,required:true },
+    country: { type: String  ,required:true}
   },
 
   createdAt: { 
     type: Date, 
     default: Date.now 
   }
+  
 
 }, { timestamps: true });
 

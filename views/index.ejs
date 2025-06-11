@@ -147,10 +147,13 @@
         <% } %>
         <a href="/cart">View Cart</a>
         <% if (role === 'admin') { %>
-          <a href="/admin/orders">All Orders</a>
-        <% } else if (role === 'seller') { %>
-          <a href="/seller/orders">Your Orders</a>
-        <% } %>
+  <a href="/admin/orders">All Orders</a>
+<% } else if (role === 'seller') { %>
+  <a href="/seller/orders">Your Orders</a>
+<% } else if (role === 'user') { %>
+  <a href="/user-orders">My Orders</a>
+<% } %>
+
         <a href="/logout">Logout</a>
       <% } else { %>
         <a href="/login">Login</a>

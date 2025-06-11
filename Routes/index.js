@@ -72,16 +72,26 @@ router.get('/', async (req, res) => {
   const products = await Product.find();
   const userId = req.session.userId || null;
   const role = req.session.role || null;
-res.render('index', {
-  products,
-  userId,
-  role,
-  user: req.session.user
+
+  let userOrders = [];
+  if (userId) {
+    userOrders = await Order.find({ userId })
+      .populate('products.product', 'name price') // populate product details
+      .sort({ createdAt: -1 });
+  }
+
+  res.render('index', {
+    products,
+    userId,
+    role,
+    user: req.session.user,
+    userOrders
+  });
 });
 
  
 
-});
+
 
 // Show registration form
 router.get('/register', (req, res) => {
@@ -503,31 +513,29 @@ router.post('/checkout', async (req, res) => {
   }
 
   try {
-    const cart = await Cart.findOne({ userId: req.session.userId })
-      .populate({
-        path: 'items.productId',
-        populate: {
-          path: 'createdBy',
-          model: 'User'
-        }
-      });
+    const { street, city, state, zip, country } = req.body;
+    const shippingAddress = { street, city, state, zip, country };
+
+    const cart = await Cart.findOne({ userId: req.session.userId }).populate({
+      path: 'items.productId',
+      populate: { path: 'createdBy', model: 'User' }
+    });
 
     if (!cart || cart.items.length === 0) {
       return res.status(400).send('Cart is empty.');
     }
 
-    // Remove invalid items and optionally save cleaned cart
-    const invalidItems = cart.items.filter(item => !item.productId);
-    if (invalidItems.length > 0) {
-      console.warn(`Removing ${invalidItems.length} invalid cart items with missing product.`);
-      cart.items = cart.items.filter(item => item.productId);
+    const validItems = cart.items.filter(item => item.productId);
+    if (validItems.length !== cart.items.length) {
+      cart.items = validItems;
       await cart.save();
     }
 
-    const orderProducts = cart.items.map(item => {
+    const orderProducts = validItems.map(item => {
       if (!item.productId.createdBy) {
         throw new Error('createdBy missing for product: ' + item.productId.name);
       }
+
       return {
         product: item.productId._id,
         name: item.productId.name,
@@ -542,27 +550,44 @@ router.post('/checkout', async (req, res) => {
     const order = new Order({
       userId: req.session.userId,
       products: orderProducts,
-      total
+      total,
+      shippingAddress
     });
 
     await order.save();
     await Cart.deleteOne({ userId: req.session.userId });
 
-   res.send(`
-      <h2>Order placed</h2>
- <a href="/" style="
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #28a745; 
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-  font-weight: bold;
-  font-family: Arial, sans-serif;
-">
-  Shop more
-</a>
-    `);
+    // Save orderId in session if needed
+    req.session.lastOrderId = order._id;
+
+    res.send(`
+  <h2>Order placed</h2>
+  <a href="/" style="
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #28a745; 
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+  ">
+    Shop more
+  </a>
+  <a href="/user-orders" style="
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #28a745; 
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+  ">
+    View Orders
+  </a>
+`);
+
   } catch (err) {
     console.error('Checkout failed:', err.message);
     console.error('Full error:', err);
@@ -624,6 +649,23 @@ router.get('/seller/orders', isSeller, async (req, res) => {
   } catch (error) {
     console.error('Error fetching seller orders:', error);
     res.status(500).send('Failed to fetch seller orders');
+  }
+});
+
+router.get('/user-orders', async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    const orders = await Order.find({ userId })
+      .populate('products.product');
+
+    res.render('user-orders', { orders });
+  } catch (err) {
+    console.error('Error fetching user orders:', err);
+    res.status(500).send('Internal Server Error');
   }
 });
 

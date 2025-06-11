@@ -60,17 +60,13 @@
       text-align: left;
       font-weight: 600;
       font-size: 0.95rem;
-      border-radius: 10px 10px 0 0;
-      box-shadow: inset 0 -2px 4px rgb(0 0 0 / 0.15);
     }
     thead th {
       padding: 15px 20px;
     }
     tbody tr {
       background: #fefefe;
-      box-shadow: 0 3px 6px rgb(0 0 0 / 0.05);
       transition: background-color 0.25s ease;
-      border-radius: 8px;
     }
     tbody tr:hover {
       background-color: #e9f1ff;
@@ -79,21 +75,12 @@
       padding: 15px 20px;
       vertical-align: middle;
     }
-    tbody td form {
-      margin: 0;
-    }
+
     tbody td input[type="number"] {
       width: 60px;
       padding: 6px 8px;
       border-radius: 6px;
       border: 1.5px solid #ccc;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
-    tbody td input[type="number"]:focus {
-      outline: none;
-      border-color: #007BFF;
-      box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
     }
 
     button {
@@ -104,16 +91,17 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: background-color 0.3s ease;
       margin-right: 8px;
     }
+
     button:hover {
       background-color: #218838;
     }
+
     button.remove-btn {
       background-color: #dc3545;
     }
+
     button.remove-btn:hover {
       background-color: #b02a37;
     }
@@ -130,10 +118,6 @@
       text-align: right;
       margin-top: 30px;
     }
-    .checkout-container a,
-    .checkout-container button {
-      font-size: 1.1rem;
-    }
 
     .continue-shopping {
       display: block;
@@ -142,21 +126,54 @@
       font-weight: 600;
       font-size: 1.1rem;
       color: #555;
-      transition: color 0.3s ease;
     }
     .continue-shopping:hover {
       color: #007BFF;
       text-decoration: underline;
     }
 
+    /* Modal Styling */
+    #addressModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+    }
+
+    #addressModal .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: 80px auto;
+      position: relative;
+    }
+
+    #addressModal input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    #addressModal h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    #addressModal .actions {
+      text-align: right;
+      margin-top: 20px;
+    }
+
     /* Responsive */
     @media (max-width: 700px) {
       tbody td, thead th {
         padding: 12px 10px;
-      }
-      button {
-        padding: 6px 12px;
-        font-size: 0.9rem;
       }
       .total-price {
         font-size: 1.2rem;
@@ -211,9 +228,7 @@
 
     <div class="checkout-container">
       <% if(userId) { %>
-        <form action="/checkout" method="POST" style="display:inline-block;">
-          <button type="submit">Proceed to Checkout</button>
-        </form>
+        <button onclick="openModal()">Proceed to Checkout</button>
       <% } else { %>
         <a href="/login">Login to Checkout</a>
       <% } %>
@@ -221,5 +236,41 @@
   <% } %>
 
   <a href="/" class="continue-shopping">← Continue Shopping</a>
+
+  <!-- Shipping Address Modal -->
+  <div id="addressModal">
+    <div class="modal-content">
+      <h2>Shipping Address</h2>
+      <form id="addressForm" action="/checkout" method="POST">
+        <input type="text" name="street" placeholder="Street Address" required />
+        <input type="text" name="city" placeholder="City" required />
+        <input type="text" name="state" placeholder="State" required />
+        <input type="text" name="zip" placeholder="ZIP Code" required />
+        <input type="text" name="country" placeholder="Country" required />
+
+        <div class="actions">
+          <button type="button" onclick="closeModal()">Cancel</button>
+          <button type="submit" style="background-color:#007BFF;">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById("addressModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("addressModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("addressModal");
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+  </script>
 </body>
 </html>
