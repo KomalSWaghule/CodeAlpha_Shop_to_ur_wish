@@ -7,7 +7,7 @@
   <style>
     * {
       box-sizing: border-box;
-      font-family:'Times New Roman', Times, serif;
+      font-family: 'Times New Roman', Times, serif;
     }
 
     body {
@@ -129,12 +129,11 @@
   <form method="GET" action="/seller/orders">
     <label for="status">Filter by Status:</label>
     <select name="status" id="status" onchange="this.form.submit()">
+      <% const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled']; %>
       <option value="">All</option>
-      <option value="Pending" <%= statusFilter === 'Pending' ? 'selected' : '' %>>Pending</option>
-      <option value="Processing" <%= statusFilter === 'Processing' ? 'selected' : '' %>>Processing</option>
-      <option value="Shipped" <%= statusFilter === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-      <option value="Delivered" <%= statusFilter === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-      <option value="Cancelled" <%= statusFilter === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+      <% statuses.forEach(status => { %>
+        <option value="<%= status %>" <%= status === statusFilter ? 'selected' : '' %>><%= status %></option>
+      <% }) %>
     </select>
   </form>
 
@@ -147,6 +146,7 @@
           <th>Customer</th>
           <th>Products</th>
           <th>Status</th>
+          <th>Total Price</th>
           <th>Order Date</th>
         </tr>
       </thead>
@@ -162,17 +162,15 @@
               </ul>
             </td>
             <td data-label="Status">
-  <form action="/seller/orders/<%= order._id %>/status" method="POST">
-    <select name="status" onchange="this.form.submit()">
-      <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
-      <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
-      <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-      <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-      <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
-    </select>
-  </form>
-</td>
- <td data-label="Total Price">₹<%= order.total %></td>
+              <form action="/seller/orders/<%= order._id %>/status" method="POST">
+                <select name="status" onchange="this.form.submit()">
+                  <% statuses.forEach(s => { %>
+                    <option value="<%= s %>" <%= order.status === s ? 'selected' : '' %>><%= s %></option>
+                  <% }) %>
+                </select>
+              </form>
+            </td>
+            <td data-label="Total Price">₹<%= order.total %></td>
             <td data-label="Order Date"><%= new Date(order.createdAt).toLocaleString() %></td>
           </tr>
         <% }) %>
