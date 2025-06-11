@@ -7,7 +7,7 @@
   <style>
     * {
       box-sizing: border-box;
-      font-family:'Times New Roman', Times, serif;
+      font-family: 'Times New Roman', Times, serif;
     }
 
     body {
@@ -109,6 +109,7 @@
         <tr>
           <th>User</th>
           <th>Products</th>
+          <th>Status</th>
           <th>Total Price</th>
           <th>Order Date</th>
         </tr>
@@ -117,6 +118,7 @@
         <% orders.forEach(order => { %>
           <tr>
             <td data-label="User"><%= order.userId ? order.userId.username : 'Unknown User' %></td>
+
             <td data-label="Products">
               <ul>
                 <% order.products.forEach(product => { %>
@@ -124,17 +126,18 @@
                 <% }); %>
               </ul>
             </td>
-<td data-label="Status">
-  <form action="/seller/orders/<%= order._id %>/status" method="POST">
-    <select name="status" onchange="this.form.submit()">
-      <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
-      <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
-      <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-      <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-      <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
-    </select>
-  </form>
-</td>
+
+            <td data-label="Status">
+              <form action="/seller/orders/<%= order._id %>/status" method="POST">
+                <select name="status" onchange="this.form.submit()">
+                  <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                  <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                  <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                  <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                  <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                </select>
+              </form>
+            </td>
 
             <td data-label="Total Price">₹<%= order.total %></td>
             <td data-label="Order Date"><%= new Date(order.createdAt).toLocaleString() %></td>
