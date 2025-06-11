@@ -651,6 +651,18 @@ router.get('/seller/orders', isSeller, async (req, res) => {
     res.status(500).send('Failed to fetch seller orders');
   }
 });
+router.post("/seller/orders/:orderId/status", async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  try {
+    await Order.findByIdAndUpdate(orderId, { status });
+    res.redirect("/seller/orders"); // Redirect back to the orders page
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 router.get('/user-orders', async (req, res) => {
   try {
