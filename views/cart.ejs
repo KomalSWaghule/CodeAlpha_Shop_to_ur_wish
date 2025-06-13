@@ -183,6 +183,13 @@
 </head>
 <body>
   <h1>Shopping Cart</h1>
+<% if (notLoggedIn) { %>
+  <script>
+    alert('You must be logged in to view your cart.');
+    window.location.href = '/login';
+  </script>
+<% } %>
+
 
   <% if (items.length === 0) { %>
     <div class="empty-cart">
