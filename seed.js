@@ -62,7 +62,7 @@ async function seedDB() {
         name: 'Cotton T-Shirt',
         description: 'Comfortable cotton T-shirt for everyday wear.',
         price: 499,
-        image: 'https://example.com/images/cotton-tshirt.jpg',
+        image: 'https://cdn.fcglcdn.com/brainbees/images/products/583x720/18854065a.webp',
         category: 'Clothes',
         createdBy: user._id
       },
