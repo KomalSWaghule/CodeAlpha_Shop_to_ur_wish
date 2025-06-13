@@ -182,6 +182,15 @@
   </style>
 </head>
 <body>
+
+  <!-- Popup for unauthenticated users -->
+  <% if (notLoggedIn) { %>
+    <script>
+      alert('You must be logged in to view your cart.');
+      window.location.href = '/login';
+    </script>
+  <% } %>
+
   <h1>Shopping Cart</h1>
 
   <% if (items.length === 0) { %>
@@ -227,7 +236,7 @@
     <p class="total-price">Total Price: ₹<%= totalPrice.toFixed(2) %></p>
 
     <div class="checkout-container">
-      <% if(userId) { %>
+      <% if (userId) { %>
         <button onclick="openModal()">Proceed to Checkout</button>
       <% } else { %>
         <a href="/login">Login to Checkout</a>
