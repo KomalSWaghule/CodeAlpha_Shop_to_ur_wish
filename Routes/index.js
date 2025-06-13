@@ -474,7 +474,15 @@ router.post('/add-to-cart/:productId', async (req, res) => {
 
 router.get('/cart', isAuthenticated, async (req, res) => {
   const userId = req.session.userId;
-
+if (!userId) {
+    // visitor, render empty cart + flag
+    return res.render('cart', {
+      items: [],
+      totalPrice: 0,
+      userId: null,
+      notLoggedIn: true
+    });
+  }
   try {
     const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart) {
