@@ -1,4 +1,4 @@
-// models/user.js
+
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
@@ -19,7 +19,7 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
-// Method to compare password
+
 UserSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
