@@ -1,4 +1,4 @@
-// models/product.js
+
 import mongoose from 'mongoose';
 
 const reviewSchema = new mongoose.Schema({
@@ -44,7 +44,7 @@ const ProductSchema = new mongoose.Schema({
   },
 
   image: {
-    type: String, // URL or path to the uploaded image
+    type: String, 
     required: false
   },
 
@@ -63,7 +63,7 @@ const ProductSchema = new mongoose.Schema({
   required: true,
   trim: true
 },
-  reviews: [reviewSchema], // array of embedded review subdocuments
+  reviews: [reviewSchema], 
 
   averageRating: {
     type: Number,
