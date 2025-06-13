@@ -443,12 +443,18 @@ router.post('/cart/remove/:productId', isAuthenticated, async (req, res) => {
 
 router.post('/add-to-cart/:productId', async (req, res) => {
   const userId = req.session.userId;
+
+  // ✅ Check if user is logged in
+  if (!userId) {
+    return res.status(401).send("You must be logged in to add items to the cart.");
+  }
+
   const { productId } = req.params;
   const quantity = parseInt(req.body.quantity) || 1;
 
   let cart = await Cart.findOne({ userId });
   if (!cart) {
-    cart = new Cart({ userId, items: [] });
+    cart = new Cart({ userId, items: [] });  // ✅ userId is now guaranteed to be defined
   }
 
   const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
