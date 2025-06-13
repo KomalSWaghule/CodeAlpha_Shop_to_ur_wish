@@ -446,9 +446,8 @@ router.post('/add-to-cart/:productId', async (req, res) => {
 
   // ✅ Check if user is logged in
   if (!userId) {
-    return res.status(401).send("You must be logged in to add items to the cart.");
+    return res.redirect('/?message=' + encodeURIComponent('Please login to add items to your cart.'));
   }
-
   const { productId } = req.params;
   const quantity = parseInt(req.body.quantity) || 1;
 
