@@ -3,10 +3,10 @@ import dotenv from 'dotenv';
 import Product from './models/product.js';
 import User from './models/user.js';
 
-// Load environment variables from .env
+
 dotenv.config();
 
-// Connect to MongoDB Atlas using .env URI
+
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
