@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const orderSchema = new mongoose.Schema({
+const orderstructure = new mongoose.Schema({
   userId: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -28,7 +28,7 @@ const orderSchema = new mongoose.Schema({
         required: true, 
         min: 1 
       },
-      createdBy: {  // Seller/Admin who added the product
+      createdBy: {  
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -64,6 +64,6 @@ const orderSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.model('Order', orderstructure);
 
 export default Order;
