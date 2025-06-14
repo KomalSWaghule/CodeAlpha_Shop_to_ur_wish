@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 import Product from '../models/product.js';
+
 import Cart from '../models/cart.js';
 import Order from '../models/order.js';
 import User from '../models/User.js';
@@ -26,10 +27,10 @@ if (!userId) return res.redirect('/login');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads/'); // folder where images are saved (make sure this folder exists)
+    cb(null, './uploads/'); 
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname); // unique filename
+    cb(null, Date.now() + '-' + file.originalname); 
   }
 });
 
@@ -547,25 +548,25 @@ router.post('/checkout', async (req, res) => {
   <h2>Order placed</h2>
   <a href="/" style="
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px;
     background-color: #28a745; 
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 7px;
     font-weight: bold;
-    font-family: Arial, sans-serif;
+   font-family: 'Times New Roman', Times, serif;
   ">
     Shop more
   </a>
   <a href="/user-orders" style="
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px;
     background-color: #28a745; 
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 7px;
     font-weight: bold;
-    font-family: Arial, sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   ">
     View Orders
   </a>
