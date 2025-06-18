@@ -3,7 +3,6 @@ import Product from './models/product.js';
 import User from './models/user.js';
 
 
-const MONGODB_URI = 'mongodb+srv://komalwaghule05:Komal11062005@cluster0.pmivpsb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
