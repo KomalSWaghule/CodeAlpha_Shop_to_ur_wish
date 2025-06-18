@@ -15,7 +15,7 @@ const __dirname = dirname(__filename);
 const app = express();
 
 // Connect to DB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://komalwaghule05:Komal11062005@cluster0.pmivpsb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
@@ -30,7 +30,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || 'mongodb+srv://komalwaghule05:Komal11062005@cluster0.pmivpsb.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0'
+    mongoUrl: process.env.MONGODB_URI
   })
 }));
 
