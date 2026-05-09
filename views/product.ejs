@@ -16,7 +16,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
+      padding: 40px;
     }
 
     .product-container {
@@ -169,6 +169,7 @@
       <button type="submit">Submit Review</button>
     </form>
 
+
     <hr>
 
     <h2>Reviews</h2>
@@ -184,6 +185,22 @@
     <% } else { %>
       <p>No reviews yet.</p>
     <% } %>
+       <h2>Similar products</h2>
+       <% if (similarProducts.length>0) {%>
+        <div class="similarproduct">
+          <% similarProducts.forEach(item=>{%>
+          <div class="similarproduct">
+            <img src="<%= item.image %>"/>
+            <h4><%= item.name %></h4>
+            <p><%= item.price %></p>
+            <a href="/product/<%= item._id %>">View</a>
+          </div>
+          <% }) %>
+        </div>
+        <% } else { %>
+          <p>No Similar Product</p>
+      <% } %>
+    
 
     <div class="back-link">
       <a class="button-link" href="/">Back to products</a>
