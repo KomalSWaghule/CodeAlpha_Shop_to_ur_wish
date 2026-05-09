@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from './models/product.js';
-import User from './models/user.js';
+import User from './models/User.js';
 
 // Load environment variables from .env
 dotenv.config();

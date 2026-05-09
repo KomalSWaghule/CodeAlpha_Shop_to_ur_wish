@@ -1,44 +1,34 @@
 import express from 'express';
 const router = express.Router();
-
 import Product from '../models/product.js';
 import Cart from '../models/cart.js';
 import Order from '../models/order.js';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import multer from 'multer';
-
-
-
-
+import mongoose from 'mongoose';
+import Similarity from '../models/p_similarity.js';
 export function getUserId(req) {
   return req.session?.userId || null;
 }
 
-
 router.get('/profile', (req, res) => {
 const userId = req.session?.userId;
-if (!userId) return res.redirect('/login'); // or send 401
-
-  
+if (!userId) return res.redirect('/login');
   res.send(`Your user ID is ${userId}`);
 });
 
 
-// Configure storage for multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads/'); // folder where images are saved (make sure this folder exists)
+    cb(null, './uploads/'); 
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname); // unique filename
+    cb(null, Date.now() + '-' + file.originalname); 
   }
 });
 
 const upload = multer({ storage: storage });
-
-
-// Role-based middleware
 function authorizeRoles(...roles) {
   return (req, res, next) => {
     if (!roles.includes(req.session.role)) {
@@ -63,11 +53,8 @@ function isUser(req, res, next) {
   next();
 }
 
-// Constants for admin credentials
-const ADMIN_USERNAME = 'admin123@gmail.com';
-const ADMIN_PASSWORD = '12345';
 
-// ecommerceRoutes.js or your index route file
+
 router.get('/', async (req, res) => {
   const products = await Product.find();
   const userId = req.session.userId || null;
@@ -76,14 +63,12 @@ router.get('/', async (req, res) => {
   let userOrders = [];
   if (userId) {
     userOrders = await Order.find({ userId })
-      .populate('products.product', 'name price') // populate product details
+      .populate('products.product', 'name price') 
       .sort({ createdAt: -1 });
   }
 
   res.render('index', {
-    products,
-    userId,
-    role,
+    products,userId,role,
     user: req.session.user,
     userOrders
   });
@@ -91,13 +76,13 @@ router.get('/', async (req, res) => {
 
  
 
+const ADMIN_USERNAME='komalwaghule05@gmail.com';
+const ADMIN_PASSWORD='1106';
 
-
-// Show registration form
 router.get('/register', (req, res) => {
-  res.render('register'); // Ensure views/register.ejs exists
+  res.render('register'); 
 });
-// User registration
+
 router.post('/register', async (req, res) => {
   try {
     const { username, password, role } = req.body;
@@ -109,24 +94,24 @@ router.post('/register', async (req, res) => {
 
     const user = new User({
       username: username.trim(),
-      password,  // will be hashed by pre-save hook
+      password,  
       role: userRole
     });
 
     await user.save();
 
-    // Auto login after register
+   
     req.session.userId = user._id.toString();
     req.session.role = user.role;
 
-    res.redirect('/');  // or dashboard page
+    res.redirect('/'); 
 
   } catch (err) {
     console.error('Registration error:', err);
     res.status(500).render('register', { error: 'Failed to register user. Try again.' });
   }
 });
-// Middleware to load user from session and attach to req.user
+
 router.use(async (req, res, next) => {
   if (req.session?.userId) {
     try {
@@ -155,12 +140,11 @@ function isAuthenticated(req, res, next) {
 
 
 
-// Show login form
 router.get('/login', (req, res) => {
-  res.render('login'); // Ensure views/login.ejs exists
+  res.render('login'); 
 });
 
-// User login
+
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -176,11 +160,11 @@ router.post('/login', async (req, res) => {
       return res.status(401).render('login', { error: 'Invalid username or password' });
     }
 
-    // Save session data
+  
     req.session.userId = user._id.toString();
     req.session.role = user.role;
 
-    // Redirect to home page or dashboard
+  
     res.redirect('/');
   } catch (err) {
     console.error('Login error:', err);
@@ -196,19 +180,17 @@ async function rehashPassword(username, newPassword) {
     console.log('User not found');
     return;
   }
-  user.password = newPassword; // plain password
-  await user.save(); // triggers pre save hook to hash password
+  user.password = newPassword;
+  await user.save(); 
   console.log('Password rehashed successfully');
 }
 
-rehashPassword('komalwaghule05@gmail.com', '1106');
 
-// Show reset password form
 router.get('/reset-password', (req, res) => {
-  res.render('reset-password');  // Create views/reset-password.ejs
+  res.render('reset-password');  
 });
 
-// Handle reset password submission
+
 router.post('/reset-password', async (req, res) => {
   const { username, newPassword } = req.body;
 
@@ -218,7 +200,7 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).send('User not found');
     }
 
-    user.password = newPassword; // this triggers the pre-save hook to hash it
+    user.password = newPassword; 
     await user.save();
 
     res.send('Password reset successful. You can now log in with your new password.');
@@ -228,13 +210,12 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-// Admin & Seller: Add product
-// Only admin and seller can access add product form
+
 router.get('/addproduct', authorizeRoles('admin', 'seller'), (req, res) => {
-  res.render('addproduct'); // Create views/addproduct.ejs
+  res.render('addproduct'); 
 });
 
-// POST route to add a product
+
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
@@ -264,12 +245,9 @@ router.post('/addproduct', upload.single('image'), async (req, res) => {
     const formattedCategory = capitalizeFirstLetter(category.trim());
 
     const newProduct = new Product({
-      name,
-      price,
-      description,
+      name,price,description,
       image: imagePath,
-      createdBy,
-      category: formattedCategory
+      createdBy, category: formattedCategory
     });
 
     const savedProduct = await newProduct.save();
@@ -282,7 +260,6 @@ router.post('/addproduct', upload.single('image'), async (req, res) => {
   }
 });
 
-// GET route to list all products
 router.get('/product/:id', async (req, res) => {
   try {
     const productId = req.params.id;
@@ -290,14 +267,34 @@ router.get('/product/:id', async (req, res) => {
     if (!product) {
       return res.status(404).send('Product not found');
     }
-    res.render('product', { product, userId: req.session.userId, role: req.session.role });
+
+     const similarity = await Similarity.findOne({
+        productId: new mongoose.Types.ObjectId(productId)
+    }).populate("similarProducts");
+
+     const similarProducts = similarity
+      ? similarity.similarProducts
+      : [];
+
+    console.log("Similarity Doc:", similarity);
+    console.log("Similar Products:", similarProducts);
+    console.log("Requested ID:", productId);
+console.log("Type:", typeof productId);
+
+console.log("Similarity document:", similarity);
+console.log("Similar products array:", similarity?.similarProducts);
+
+
+    
+    res.render('product', { product, userId: req.session.userId, role: req.session.role,
+      similarProducts
+     });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
   }
 });
-// GET /products?type=Electronics
-// GET /products?type=Electronics
+
 router.get('/products', async (req, res) => {
   const { type } = req.query;
   try {
@@ -325,21 +322,21 @@ router.post('/products/:id/reviews', isAuthenticated, async (req, res) => {
   });
 
   await product.save();
-  res.redirect('/product/' + productId); // or however you view the product
+  res.redirect('/product/' + productId); 
 });
 
 router.get('/some-route', async (req, res) => {
-  const userId = req.session.userId;  // <-- get userId from session
+  const userId = req.session.userId;  
 
   const orders = await Order.find({
     'products.owner': userId
   }).populate('product.product');
 
-  // use orders ...
+
 });
 
 router.post('/createOrder', async (req, res) => {
-  const { products, userId, shippingAddress } = req.body; // products = [{ productId, quantity }]
+  const { products, userId, shippingAddress } = req.body; 
   
   let orderProducts = [];
   let totalPrice = 0;
@@ -372,7 +369,6 @@ router.post('/createOrder', async (req, res) => {
 });
 
 
-// Admin & Seller: Edit product
 router.put('/editproduct/:id', authorizeRoles('admin', 'seller'), async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) return res.status(404).send('Product not found');
@@ -385,7 +381,7 @@ router.put('/editproduct/:id', authorizeRoles('admin', 'seller'), async (req, re
   await product.save();
   res.send('Product updated');
 });
-// User: Update quantity in cart
+
 router.post('/cart/update/:productId', async (req, res) => {
   const { productId } = req.params;
   const { quantity } = req.body;
@@ -397,14 +393,14 @@ router.post('/cart/update/:productId', async (req, res) => {
   } else {
     const cart = await Cart.findOne({ userId: req.session.userId });
     if (!cart) {
-      // If no cart exists, create one with the product and quantity
+      
       const newCart = new Cart({
         userId: req.session.userId,
         items: [{ productId, quantity: parsedQty }]
       });
       await newCart.save();
     } else {
-      // Update existing item quantity or add new item
+     
       const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
       if (itemIndex > -1) {
         cart.items[itemIndex].quantity = parsedQty;
@@ -417,7 +413,6 @@ router.post('/cart/update/:productId', async (req, res) => {
   res.redirect('/cart');
 });
 
-// Remove product from cart
 router.post('/cart/remove/:productId', isAuthenticated, async (req, res) => {
   const userId = req.session.userId;
   const productId = req.params.productId;
@@ -426,10 +421,10 @@ router.post('/cart/remove/:productId', isAuthenticated, async (req, res) => {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      return res.redirect('/cart'); // Redirect if cart not found
+      return res.redirect('/cart'); 
     }
 
-    // Filter out the item
+    
     cart.items = cart.items.filter(item => item.productId.toString() !== productId);
     await cart.save();
 
@@ -443,12 +438,17 @@ router.post('/cart/remove/:productId', isAuthenticated, async (req, res) => {
 
 router.post('/add-to-cart/:productId', async (req, res) => {
   const userId = req.session.userId;
+
+  
+  if (!userId) {
+    return res.redirect('/?message=' + encodeURIComponent('Please login to add items to your cart.'));
+  }
   const { productId } = req.params;
   const quantity = parseInt(req.body.quantity) || 1;
 
   let cart = await Cart.findOne({ userId });
   if (!cart) {
-    cart = new Cart({ userId, items: [] });
+    cart = new Cart({ userId, items: [] });  
   }
 
   const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
@@ -462,18 +462,17 @@ router.post('/add-to-cart/:productId', async (req, res) => {
   res.redirect('/cart');
 });
 
-// User: Add to cart
-// User: Add to cart (POST /cart/add)
 
 
-
-// User: View cart
 
 
 
 
 router.get('/cart', isAuthenticated, async (req, res) => {
   const userId = req.session.userId;
+if (!req.session.userId) {
+  return res.status(401).send('Login required to add to cart.');
+}
 
   try {
     const cart = await Cart.findOne({ userId }).populate('items.productId');
@@ -493,10 +492,9 @@ router.get('/cart', isAuthenticated, async (req, res) => {
       })
       .filter(item => item !== null);
 
-    // Calculate total price for the whole cart
     const totalPrice = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
-    // Pass both items and totalPrice to the template
+   
     res.render('cart', { items: cartItems, totalPrice, userId });
   } catch (err) {
     console.error('Error fetching cart:', err);
@@ -506,7 +504,6 @@ router.get('/cart', isAuthenticated, async (req, res) => {
 
 
 
-// User: Checkout
 router.post('/checkout', async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Login required to checkout.');
@@ -564,25 +561,25 @@ router.post('/checkout', async (req, res) => {
   <h2>Order placed</h2>
   <a href="/" style="
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px;
     background-color: #28a745; 
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 7px;
     font-weight: bold;
-    font-family: Arial, sans-serif;
+   font-family: 'Times New Roman', Times, serif;
   ">
     Shop more
   </a>
   <a href="/user-orders" style="
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px;
     background-color: #28a745; 
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 7px;
     font-weight: bold;
-    font-family: Arial, sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   ">
     View Orders
   </a>
@@ -595,17 +592,13 @@ router.post('/checkout', async (req, res) => {
   }
 });
 
-
-
-// Admin: View all orders
-// Admin: View all orders
 router.get('/admin/orders', isAdmin, async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate('userId', 'username') // populate user info
-      .populate('products.product');  // populate product details
+      .populate('userId', 'username') 
+      .populate('products.product'); 
 
-    res.render('admin-orders', { orders }); // Create views/admin-orders.ejs
+    res.render('admin-orders', { orders }); 
   } catch (error) {
     console.error('Error fetching admin orders:', error);
     res.status(500).send('Failed to fetch orders');
@@ -613,7 +606,7 @@ router.get('/admin/orders', isAdmin, async (req, res) => {
 });
 
 
-// Seller: View orders for their products only
+
 router.get('/seller/orders', isSeller, async (req, res) => {
   try {
     const sellerId = req.session.userId;
@@ -633,7 +626,7 @@ router.get('/seller/orders', isSeller, async (req, res) => {
         products: relevantProducts
       };
 
-      // ✅ Filter by status if specified
+  
       if (statusFilter && filteredOrder.status !== statusFilter) {
         return null;
       }
@@ -643,7 +636,7 @@ router.get('/seller/orders', isSeller, async (req, res) => {
 
     res.render('seller-orders', { 
       orders: filteredOrders,
-      statusFilter // ✅ This fixes the ReferenceError
+      statusFilter 
     });
 
   } catch (error) {
@@ -651,7 +644,31 @@ router.get('/seller/orders', isSeller, async (req, res) => {
     res.status(500).send('Failed to fetch seller orders');
   }
 });
+router.post("/admin/orders/:orderId/status", async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
 
+  try {
+    await Order.findByIdAndUpdate(orderId, { status });
+    res.redirect("/admin/orders");
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/seller/orders/:orderId/status", async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  try {
+    await Order.findByIdAndUpdate(orderId, { status });
+    res.redirect("/seller/orders"); 
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 router.get('/user-orders', async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -669,27 +686,21 @@ router.get('/user-orders', async (req, res) => {
   }
 });
 
-
-
-// Admin: View all products
 router.get('/admin/products', isAdmin, async (req, res) => {
   const products = await Product.find();
   res.json(products);
 });
 
-// Seller: View own products
 router.get('/seller/products', isSeller, async (req, res) => {
   const products = await Product.find({ createdBy: req.session.userId });
   res.json(products);
 });
-// Admin & Seller: Delete product
-// Admin & Seller: Delete product
+
 router.delete('/deleteproduct/:id', authorizeRoles('admin', 'seller'), async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).send('Product not found');
 
-    // If seller, ensure they can only delete their own products
     if (req.session.role === 'seller' && String(product.createdBy) !== req.session.userId) {
       return res.status(403).send('Unauthorized');
     }
@@ -703,9 +714,7 @@ router.delete('/deleteproduct/:id', authorizeRoles('admin', 'seller'), async (re
 });
 
 
-// =======================
-// Logout for all users
-// =======================
+
 router.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -716,9 +725,7 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// =======================
-// Admin Logout (optional if different)
-// =======================
+
 router.get('/admin/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -729,6 +736,5 @@ router.get('/admin/logout', (req, res) => {
   });
 });
 
-// Export router
-export default router;
 
+export default router;

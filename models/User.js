@@ -1,14 +1,14 @@
-// models/user.js
+
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const UserSchema = new mongoose.Schema({
+const userstructure = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['user', 'seller', 'admin'], default: 'user' }
 });
 
-UserSchema.pre('save', async function (next) {
+userstructure.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
   try {
@@ -19,11 +19,10 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
-// Method to compare password
-UserSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+userstructure.methods.comparePassword = async function (userpassword) {
+  return bcrypt.compare(userpassword, this.password);
 };
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', userstructure);
 
 export default User;

@@ -1,7 +1,7 @@
-// models/product.js
+
 import mongoose from 'mongoose';
 
-const reviewSchema = new mongoose.Schema({
+const reviewstructure = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -24,7 +24,7 @@ const reviewSchema = new mongoose.Schema({
   }
 });
 
-const ProductSchema = new mongoose.Schema({
+const Productstructure = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -44,7 +44,7 @@ const ProductSchema = new mongoose.Schema({
   },
 
   image: {
-    type: String, // URL or path to the uploaded image
+    type: String, 
     required: false
   },
 
@@ -63,7 +63,7 @@ const ProductSchema = new mongoose.Schema({
   required: true,
   trim: true
 },
-  reviews: [reviewSchema], // array of embedded review subdocuments
+  reviews: [reviewstructure], 
 
   averageRating: {
     type: Number,
@@ -76,6 +76,6 @@ const ProductSchema = new mongoose.Schema({
   }
 });
 
-const Product = mongoose.model('Product', ProductSchema);
+const Product = mongoose.model('Product', Productstructure);
 
 export default Product;
