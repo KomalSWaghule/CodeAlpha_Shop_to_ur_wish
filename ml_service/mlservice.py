@@ -30,7 +30,7 @@ products = {
 
 data = []
 
-# Build user-product interaction matrix
+
 for order in orders:
 
     user_id = str(order["userId"])
@@ -101,8 +101,7 @@ for pid, product in products.items():
 
     text = (
         str(product.get("name", "")) + " " +
-        str(product.get("category", "")) + " " +
-        str(product.get("description", ""))
+        str(product.get("category", "")) 
     )
 
     product_texts[pid] = text
@@ -192,7 +191,8 @@ for product_id, base_product in products.items():
         # Recommendation threshold
         if (
             collab_score > 0.2 or
-            semantic_score > 0.5
+            semantic_score > 0.2 or 
+            bonus> 0.2
         ):
 
             final_score = (
@@ -200,10 +200,10 @@ for product_id, base_product in products.items():
                 (0.4 * semantic_score) +
                 bonus
             )
-
-            filteredproduct.append(
-                (sim_product_id, final_score)
-            )
+            if (final_score> 0.25):
+                filteredproduct.append(
+                    (sim_product_id, final_score)
+                )
 
     # Sort products by score
     filteredproduct = sorted(
